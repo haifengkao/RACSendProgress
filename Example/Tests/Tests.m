@@ -35,13 +35,16 @@ describe(@"send progress test", ^{
   context(@"will pass", ^{
     
       it(@"will send progress", ^{
+          __block BOOL done = NO;
         RACSubject* subject = [RACSubject subject];
         [subject subscribeProgress:^(float x) {
             [[@(x) should] equal:@(1.0)];
+            done = YES;
         } next:^(id x) {
         }];
 
-        [subject sendProgress:1.0];
+        [subject rac_sendProgress:1.0];
+          [[expectFutureValue(theValue(done)) shouldEventuallyBeforeTimingOutAfter(10000.0)] beYes];
       });
     
       //it(@"can read", ^{

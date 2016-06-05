@@ -2,41 +2,71 @@
 
 #import "RACPassthroughSubscriber.h"
 #import "RACDisposable.h"
+#import "RACSubject.h"
 #import <objc/runtime.h>
 
 #import "RACPassthroughSubscriber.h"
-@interface RACPassthroughSubscriber (KLProgress)
-- (void)sendProgress:(float)p;
-@end
-
-@implementation RACPassthroughSubscriber(KLProgress)
-- (void)sendProgress:(float)p{
-    
-    RACDisposable *disposable = [self performSelector:@selector(disposable)];
-    if (disposable.disposed) return;
-    
-    id<RACSubscriber> innerSubscriber = [self valueForKey:@"innerSubscriber"];
-    if([innerSubscriber isKindOfClass:[RACPassthroughSubscriber class]]){
-        [(RACPassthroughSubscriber*)innerSubscriber sendProgress:p];
-    }else if([innerSubscriber isKindOfClass:[KLRACSubscriber class]]){
-        [(KLRACSubscriber*)innerSubscriber sendProgress:p];
-    }else{
-        NSAssert(0, @"not recognized object");
-    }
-
-}
-
-@end
-
-
 
 static NSString *KLProgress_Block_Key;
-@interface KLRACSubscriber()
 
-@property (nonatomic, copy) void (^_progress)(float progress);
+@implementation NSObject (RACSendProgress)
+- (void)rac_setProgress:(void (^)(float))_progress {
+    objc_setAssociatedObject(self, &KLProgress_Block_Key, _progress, OBJC_ASSOCIATION_COPY);
+}
 
+- (void (^)(float))rac_progress {
+    return objc_getAssociatedObject(self, &KLProgress_Block_Key);
+}
+
+- (void)rac_sendProgress:(float)p
+{
+    if (![self conformsToProtocol:@protocol(RACSubscriber)]) {
+        NSAssert(NO, @"RACSubscriber only");
+        return;
+    }
+
+    if ([self isKindOfClass:[RACPassthroughSubscriber class]]) {
+        RACDisposable *disposable = [self performSelector:@selector(disposable)];
+        if (disposable.disposed) return;
+        NSObject<RACSubscriber>* innerSubscriber = [self valueForKey:@"innerSubscriber"];
+        [innerSubscriber rac_sendProgress:p];
+    } else if ([self isKindOfClass:[KLRACSubscriber class]]) {
+        RACDisposable *disposable = [self performSelector:@selector(disposable)];   
+        if(!disposable.disposed) {
+            @synchronized (self) {
+                void (^progressBlock)(float) = [self.rac_progress copy];
+                if (progressBlock) { progressBlock(p); }
+            }
+        }
+    } else if ([self isKindOfClass:[RACSubject class]]) {
+        
+        void (^subscriberBlock)(id<RACSubscriber> subscriber) = ^(id<RACSubscriber> subscriber){
+            [(NSObject*)subscriber rac_sendProgress:p];
+        };
+        
+        SEL performBlockSel = sel_registerName("enumerateSubscribersUsingBlock:");
+        if([self respondsToSelector:performBlockSel]){
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [self performSelector:performBlockSel withObject:subscriberBlock];
+#pragma clang diagnostic pop
+        }else{
+            NSAssert(0, @"not found enumerateSubscribersUsingBlock:");
+        }
+    } else {
+
+        Class subscriberCls = NSClassFromString(@"RACSubscriber");
+        if (subscriberCls && [self isKindOfClass:subscriberCls]) {
+            @synchronized (self) {
+                void (^progressBlock)(float) = [self.rac_progress copy];
+                if (progressBlock) { progressBlock(p); }
+            }
+        } else {
+            NSAssert(NO, @"not recognized subscriber object");
+        }
+    }
+}
 @end
-
 
 @implementation KLRACSubscriber
 
@@ -74,28 +104,15 @@ static NSString *KLProgress_Block_Key;
     }
     KLRACSubscriber *subscriber = nil;
     if(proxySubscriber){
-        subscriber = [[KLRACSubscriber alloc]init];
+        subscriber = [[KLRACSubscriber alloc] init];
         subscriber.subscriber = proxySubscriber;
-        subscriber._progress = progress;
+        [subscriber rac_setProgress:progress];
     }else{
         NSAssert(0, @"not create RACSubscriber");
     }
     
     return subscriber;
 
-}
-
-- (void)set_progress:(void (^)(float))_progress {
-    objc_setAssociatedObject(self, &KLProgress_Block_Key, _progress, OBJC_ASSOCIATION_COPY);
-}
-
-- (void (^)(float))_progress {
-    return objc_getAssociatedObject(self, &KLProgress_Block_Key);
-}
-
-- (void)sendProgress:(float)p {
-    RACDisposable *disposable = [self performSelector:@selector(disposable)];   if(disposable.disposed) return;
-    if (self._progress != NULL) self._progress(p);
 }
 
 - (void)sendNext:(id)value{
@@ -114,7 +131,6 @@ static NSString *KLProgress_Block_Key;
     [self.subscriber didSubscribeWithDisposable:disposable];
 }
 
-
 - (void)forwardInvocation:(NSInvocation *)invocation{
     NSAssert(self.subscriber, @"subscriber is nil");
     //if(!self.subscriber)
@@ -129,33 +145,4 @@ static NSString *KLProgress_Block_Key;
     NSObject* tmpSub = self.subscriber;
     return [tmpSub methodSignatureForSelector:sel];
 }
-
-- (void)dealloc{
-    self.subscriber = nil;
-}
-
 @end
-
-
-@implementation RACSubject (KLProgressSending)
-
-- (void)sendProgress:(float)value {
-    void (^subscriberBlock)(id<RACSubscriber> subscriber) = ^(id<RACSubscriber> subscriber){
-        if([subscriber isKindOfClass:[RACPassthroughSubscriber class]]){
-            [(RACPassthroughSubscriber*)subscriber sendProgress:value];
-        }
-    };
-    
-    SEL performBlockSel = sel_registerName("enumerateSubscribersUsingBlock:");
-    if([self respondsToSelector:performBlockSel]){
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [self performSelector:performBlockSel withObject:subscriberBlock];
-#pragma clang diagnostic pop
-    }else{
-        NSAssert(0, @"not found enumerateSubscribersUsingBlock:");
-    }
-}
-
-@end
-

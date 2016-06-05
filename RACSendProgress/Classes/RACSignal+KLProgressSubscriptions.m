@@ -9,7 +9,7 @@
     
     KLRACSubscriber *o = [KLRACSubscriber subscriberWithNext:nextBlock progress:progress error:NULL completed:NULL];
     
-    return [self subscribe:o.subscriber];
+    return [self subscribe:o];
 }
 
 - (RACDisposable *)subscribeProgress:(void (^)(float progress))progress next:(void (^)(id x))nextBlock completed:(void (^)(void))completedBlock {
