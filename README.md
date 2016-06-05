@@ -1,0 +1,29 @@
+# RACSendProgress
+
+[![CI Status](http://img.shields.io/travis/Hai Feng Kao/RACSendProgress.svg?style=flat)](https://travis-ci.org/Hai Feng Kao/RACSendProgress)
+[![Version](https://img.shields.io/cocoapods/v/RACSendProgress.svg?style=flat)](http://cocoapods.org/pods/RACSendProgress)
+[![License](https://img.shields.io/cocoapods/l/RACSendProgress.svg?style=flat)](http://cocoapods.org/pods/RACSendProgress)
+[![Platform](https://img.shields.io/cocoapods/p/RACSendProgress.svg?style=flat)](http://cocoapods.org/pods/RACSendProgress)
+
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Requirements
+
+## Installation
+
+RACSendProgress is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod "RACSendProgress"
+```
+
+## Author
+
+Hai Feng Kao, haifeng@cocoaspice.in
+
+## License
+
+RACSendProgress is available under the MIT license. See the LICENSE file for more info.
