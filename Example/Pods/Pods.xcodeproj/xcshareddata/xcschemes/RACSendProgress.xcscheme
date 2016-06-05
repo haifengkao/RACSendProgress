@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'F1EBA15C2B74713945C07D7C'
+               BlueprintIdentifier = '5DC8A30977F949F2010699B5'
                BlueprintName = 'RACSendProgress'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'RACSendProgress.framework'>

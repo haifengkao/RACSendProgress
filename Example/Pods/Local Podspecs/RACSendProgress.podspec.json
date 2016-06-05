@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "summary": "A short description of RACSendProgress.",
   "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/RACSendProgress",
+  "homepage": "https://github.com/haifengkao/RACSendProgress",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,11 +12,16 @@
     "Hai Feng Kao": "haifeng@cocoaspice.in"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/RACSendProgress.git",
+    "git": "https://github.com/haifengkao/RACSendProgress.git",
     "tag": "0.1.0"
   },
   "platforms": {
     "ios": "8.0"
   },
-  "source_files": "RACSendProgress/Classes/**/*"
+  "source_files": "RACSendProgress/Classes/**/*",
+  "dependencies": {
+    "ReactiveCocoa": [
+      "~> 2.0"
+    ]
+  }
 }

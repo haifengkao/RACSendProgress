@@ -85,7 +85,9 @@ strip_invalid_archs() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-RACSendProgress_Example/RACSendProgress.framework"
+  install_framework "Pods-RACSendProgress_Example/ReactiveCocoa.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-RACSendProgress_Example/RACSendProgress.framework"
+  install_framework "Pods-RACSendProgress_Example/ReactiveCocoa.framework"
 fi

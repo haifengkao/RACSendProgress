@@ -1,6 +1,14 @@
 PODS:
   - Kiwi (2.4.0)
-  - RACSendProgress (0.1.0)
+  - RACSendProgress (0.1.0):
+    - ReactiveCocoa (~> 2.0)
+  - ReactiveCocoa (2.5):
+    - ReactiveCocoa/UI (= 2.5)
+  - ReactiveCocoa/Core (2.5):
+    - ReactiveCocoa/no-arc
+  - ReactiveCocoa/no-arc (2.5)
+  - ReactiveCocoa/UI (2.5):
+    - ReactiveCocoa/Core
 
 DEPENDENCIES:
   - Kiwi
@@ -12,6 +20,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Kiwi: f49c9d54b28917df5928fe44968a39ed198cb8a8
-  RACSendProgress: 162daf26c4313cfe68d48cff6c9807484cba006f
+  RACSendProgress: 7be5b1121de5659d1012c1c1a2251aa3097d5c20
+  ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
 
 COCOAPODS: 0.39.0
