@@ -1,11 +1,12 @@
 use_frameworks!
 
-target 'RACSendProgress_Example' do
+target 'RACSendProgress_Example', :exclusive=> true do
   pod 'RACSendProgress', :path => '../'
 
-  target 'RACSendProgress_Tests' do
-    inherit! :search_paths
+end
 
-    pod 'Kiwi'
-  end
+target 'RACSendProgress_Tests', :exclusive=> true do
+  pod 'RACSendProgress', :path => '../'
+
+  pod 'Kiwi'
 end

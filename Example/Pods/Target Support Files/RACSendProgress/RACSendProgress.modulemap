@@ -1,0 +1,6 @@
+framework module RACSendProgress {
+  umbrella header "RACSendProgress-umbrella.h"
+
+  export *
+  module * { export * }
+}

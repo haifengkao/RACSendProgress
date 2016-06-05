@@ -1,0 +1,6 @@
+framework module Pods_RACSendProgress_Example {
+  umbrella header "Pods-RACSendProgress_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}
